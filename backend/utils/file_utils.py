@@ -19,7 +19,7 @@ file_handler = logging.FileHandler(os.path.join(LOG_DIR, "ats_scorer.log"))
 file_handler.setLevel(logging.INFO)
 file_handler.setFormatter(logging.Formatter(
     '%(asctime)s - %(levelname)s - %(message)s'
-))
+)) 
 
 # Simplified console handler
 console_handler = logging.StreamHandler(sys.stdout)
@@ -31,6 +31,7 @@ if not logger.handlers:
     logger.addHandler(console_handler)
 
 
+
 class ATSBaseError(Exception):
     """Simple base class for ATS errors."""
     def __init__(self, message: str, user_message: Optional[str] = None, **kwargs):
@@ -40,6 +41,8 @@ class ATSBaseError(Exception):
 
 
 
+
+#Basically yha hum custom exception bna rhe hai like for fileUpload diff error fileParsing diff error and all.
 class FileUploadError(ATSBaseError):  #File upload error is ki file jo upload ho rahi hai should be of rigth type
     pass
 
@@ -51,17 +54,19 @@ class TextExtractionError(ATSBaseError):
 
 
 
+#Error is ki basically application break he ho gyi it cannot work
 def log_error(error: Exception, context: Optional[str] = None, **kwargs) -> None:
     """Log an error simply."""
     logger.error(f"Error in {context or 'unknown'}: {error}")
 
 
+#Warning is for ki ha dikat he pr applicaion can still go on
 def log_warning(message: str, context: Optional[str] = None, **kwargs) -> None:
     """Log a warning simply."""
     logger.warning(f"{context}: {message}" if context else message)
 
 
-
+#ye bs info log krvata rhata hai like yup BE is up and all..
 def log_info(message: str, context: Optional[str] = None, **kwargs) -> None:
     """Log info simply."""
     logger.info(f"{context}: {message}" if context else message)
@@ -74,9 +79,7 @@ def with_fallback(
     primary_func: Callable[..., T],
     fallback_func: Callable[..., T],
     *args,
-    log_fallback: bool = True,
-    **kwargs
-) -> Tuple[T, bool]:
+    log_fallback: bool = True,**kwargs) -> Tuple[T, bool]:
     # Remove error_category if passed by accident
     kwargs.pop('error_category', None)
     try:
@@ -108,6 +111,7 @@ def get_default_grammar_results() -> Dict:
 
 
 
+#Basically agr koi error aaya in getting location to ye aase defaul values return kr dega
 def get_default_location_results() -> Dict:
     return {
         'location_found':     False,
@@ -119,6 +123,9 @@ def get_default_location_results() -> Dict:
         '_note': 'Location detection unavailable.'
     }
 
+
+
+#Basically agr koi error aaya in skill validation mai to ye aase defaul values return kr dega
 def get_default_skill_validation_results() -> Dict:
     return {
         'validated_skills':     [],
@@ -131,7 +138,7 @@ def get_default_skill_validation_results() -> Dict:
     }
 
 
-
+#Basically agr koi error aaya in JD compairision to ye aase defaul values return kr dega
 def get_default_jd_comparison_results() -> Dict:
     return {
         'semantic_similarity': 0.0,

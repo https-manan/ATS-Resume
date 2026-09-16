@@ -6,11 +6,11 @@ from backend.core.config import(ALLOWED_ORIGINS,APP_DESCRIPTION,APP_TITLE,APP_VE
 from backend.api.routes import router
 
 
-logger=logging.getLogger('ats_resume_scorer')#Basically it means that jo logs aab se aana start honge vo iss application ke honge its like logs of this app from nowo on and its like a mark
+logger=logging.getLogger('ats_resume_scorer')#Basically it means that jo logs aab se aana start honge vo iss application ke honge its like logs of this app from now on and its like a mark
 
 
 
-@asynccontextmanager  #Basically ye decorator iske inside function ko async bnadeta hai
+@asynccontextmanager  #Basically ye decorator iske inside function ko basically make/provide an async context manager.
 async def lifespan(app:FastAPI):
     logger.info('Starting ATS resume Analyzer API...')
 
@@ -32,7 +32,7 @@ async def lifespan(app:FastAPI):
 
     logger.info("All models loaded. API is ready to serve requests")
 
-    yield  #Basically jo chize yield se upper likhi hui hai vo server start hone ke sath sath he perform h jati hai. or we can say seerver start hone ke sath sath he start ho jati hai before loding the website
+    yield  #Basically yield keyword se upper likhi hui hai vo server start hone ke sath sath he perform/load ho jati hai. or we can say seerver start hone ke sath sath he start ho jati hai before loding the website
            # and jo yield ke baad likha hai vo server band hone ke baad exicute hota hai.
 
     logger.info('Shutting down the server') 
@@ -45,21 +45,21 @@ app=FastAPI(
     version=APP_VERSION,
     lifespan=lifespan,
     docs_url='/docs',
-    redoc_url='/redoc'
+    redoc_url='/redoc' 
 )
-
-
-app.include_router(router)
 
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[],
+    allow_origins=[ALLOWED_ORIGINS],
     allow_credentials=True,
     allow_methods = ['*'],
     allow_headers = ['*'],
 )
 
+
+
+app.include_router(router)
 
 
 #uvicorn is fastAPI run hoti hai uvicorn ki help s

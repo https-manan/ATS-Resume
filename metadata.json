@@ -1,0 +1,13 @@
+{
+  "base_model": "all-mpnet-base-v2",
+  "dataset": "merged_dataset_cleaned",
+  "total_pairs": 5305,
+  "train_pairs": 3713,
+  "val_pairs": 796,
+  "test_pairs": 796,
+  "epochs": 10,
+  "batch_size": 16,
+  "base_mae": 0.2611,
+  "finetuned_mae": 0.0471,
+  "improvement_pct": 81.97
+}

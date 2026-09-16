@@ -1,3 +1,5 @@
+#Here we gonna store all the setting and configration files we wanna save.
+
 import os 
 from pathlib import Path
 from tarfile import SUPPORTED_TYPES
@@ -5,15 +7,18 @@ from tarfile import SUPPORTED_TYPES
 
 try:
     from dotenv import load_dotenv
-    load_dotenv()
-except:
-    pass    
+    PROJECT_ROOT = Path(__file__).resolve().parents[2]
+    load_dotenv(PROJECT_ROOT / '.env')
+
+except ImportError:
+    pass
+
 
 
 #API metadata
 APP_TITLE='ATS RESUME ANALYZER API'
 APP_VERSION='1.0.0'
-APP_DESCRIPTION='analyse resume against job description using NLP + ML'
+APP_DESCRIPTION='Analyse resume against job description using NLP + ML'
 
 
 #CORS
@@ -42,15 +47,23 @@ SUPPORTED_EXTENTIONS={'.pdf','.doc','.docx'}
 
 
 #Basically SpaCY ka primary model use krenge and if in case its not load and work we gonna fallback to secondary model of spaCY 
-SPACY_MODEL_PRIMARY='en_core_web_md',
-SPACY_MODEL_SECONDRY='en_core_web_sm',
+SPACY_MODEL_PRIMARY = 'en_core_web_md'
+SPACY_MODEL_SECONDRY = 'en_core_web_sm'
 
 
-#This is sentance transformation model 
-SENTENCE_TRANSFORMER_MODEL=os.getenv('SENTENCE_TRANSFORMER_MODEL'),
+#This is sentance transformation model which we have fine tuned the BERT model
+# Project paths
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+BACKEND_ROOT = PROJECT_ROOT / "backend"
+# Sentence Transformer model
+SENTENCE_TRANSFORMER_MODEL = str(
+    BACKEND_ROOT / "bert_fineTuned_model"
+)
+
 
 
 #Basically jo weightage hogi for total 100 score of the resume
+#And yha isi liya hai(not in a function in a file) coz hum aapne hiab se baad me he change kr ske
 SCORE_WEIGHTS = {
     "formatting": 20,
     "keywords": 25,
@@ -65,5 +78,6 @@ JD_SEMANTIC_WEIGHT = 0.4
 
 
 GROQ_API_KEY=os.getenv('GROQ_API_KEY','')
-SUPABASE_URL=os.get('SUPABASE_URL')
+SUPABASE_URL=os.getenv('SUPABASE_URL')
 SUPABASE_KEY=os.getenv('SUPABASE_KEY')
+SUPABASE_JWT_SECRET="basdjahvbuhbjhnkjb"

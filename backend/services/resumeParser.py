@@ -1,10 +1,9 @@
 import io
-from unittest import result
 import magic #Jo use hoga check krne mai file PDF hai ya nahi by internal content and all this gonna check by internal content of the uploaded doc
 from typing import Tuple,Optional
 import pdfplumber  #These 2 packages pdfplumber and pyPDF2 are for PDF parsing and all and 2 of these coz 1 fail ho jay to 2nd 
 import PyPDF2
-from docx import Document  #TO help parsing docx
+from docx import Document  #TO help parsing docx file
 from backend.utils.file_utils import (FileParsingError,TextExtractionError,FileUploadError,log_error,log_warning,log_info,with_fallback) 
 from backend.core.config import (MAX_FILE_SIZE_MB,MAX_FILE_SIZE_BYTES,SUPPORTED_MIME_TYPES)
 
@@ -25,7 +24,7 @@ def validate_file(file_data:bytes,filename:str)->tuple[bool,str,Optional[str]]:
     file_size_bytes=len(file_data)
     if file_size_bytes>MAX_FILE_SIZE_BYTES: 
         size_mb=file_size_bytes/(1024*1024)
-        return False,(f'Your uploaded file size {size_mb}MB exceeds the maximum limit of {MAX_FILE_SIZE_MB} please upload a smaller file.'),None
+        return False,(f'Your uploaded file size {size_mb} MB exceeds the maximum limit of {MAX_FILE_SIZE_MB} please upload a smaller file.'),None
 
     if file_size_bytes==0:
         return False,"Uploaded file is empty...Please upload a valid resume."
@@ -36,15 +35,15 @@ def validate_file(file_data:bytes,filename:str)->tuple[bool,str,Optional[str]]:
         mime_type=magic.from_buffer(file_data,mime=True)   #Mime file ke aandar ja kr btata hai file ka d_type hai kya by checking inside the file not just by extention
     except Exception as e:
         return False, f'Error determining the file type {e}',None
-
+ 
 
     #Now we validate that file types(that we detected from MIME) is supported hai ya nhi
     if mime_type not in SUPPORTED_MIME_TYPES:
         supported=', '.join(SUPPORTED_MIME_TYPES.keys()).upper()
         return False,(f'Unsupported file types:{mime_type}. ' 
-                      f'Please upload one of {supported}'),None
+                      f'Please upload one of {supported}'),None   #basically uploaded file supported nahi hai so return false and None 
 
-    return True,'',SUPPORTED_MIME_TYPES[mime_type] #Agr mime type supported ke aandar aata hai then return True
+    return True,'',SUPPORTED_MIME_TYPES[mime_type] #Else agr mime type supported ke aandar aata hai then return True
 
 
 
@@ -52,9 +51,9 @@ def validate_file(file_data:bytes,filename:str)->tuple[bool,str,Optional[str]]:
 def _extract_pdf_hyperlinks(file_data: bytes) -> str:
     urls = []
     try:
-        reader = PyPDF2.PdfReader(io.BytesIO(file_data)) 
-        for page in reader.pages:
-            if '/Annots' not in page:
+        reader = PyPDF2.PdfReader(io.BytesIO(file_data)) #reading the file
+        for page in reader.pages: 
+            if '/Annots' not in page:   #Hyper links are stored in annotation layer we cannot abstract em like pdf.extract_text function
                 continue
             for annot_ref in page['/Annots']:
                 try:
@@ -77,6 +76,8 @@ def _extract_pdf_hyperlinks(file_data: bytes) -> str:
     return '\n'.join(urls)
 
 
+
+
 def _extract_pdf_with_pdfplumber(file_data:bytes)->str:
     text=''
     with pdfplumber.open(io.BytesIO(file_data)) as pdf:
@@ -90,11 +91,13 @@ def _extract_pdf_with_pdfplumber(file_data:bytes)->str:
             'pdfplumer extract no text',
             user_message='No text could be extracted from the PDF.'
         )
-    hyperlinks=_extract_pdf_hyperlinks(file_data)
+    hyperlinks=_extract_pdf_hyperlinks(file_data) #We gonna extract the hyperlinks using func we defined
     if hyperlinks:
         text=text.strip()+'\n'+hyperlinks
 
     return text.strip()
+
+
 
 
 #Abb same kaam hum pyPDF 2 se krvaynge coz as a fallback use krenge hum pyPDF 2 ko
@@ -119,22 +122,23 @@ def _extract_pdf_with_pypdf2(file_data: bytes)->str:
     return text.strip()
 
 
+
+
 def extract_text_from_pdf(file_data: bytes) -> str:
     try:
-        result, used_fallback = with_fallback(
+        result, used_fallback = with_fallback(    #fallback is ki hum phale pdfplumber use krenge and then pyPDF2
             _extract_pdf_with_pdfplumber,
             _extract_pdf_with_pypdf2,
             file_data,
             log_fallback=True
         )
+ 
+        if used_fallback:  #Means humne fallback me 2 me se 1 function use kr lia hai 
+            log_info("PDF EXTRACTED successfully using the PyPDF2 fallback",context="resume_parser")
 
-        if used_fallback:
-            log_info(
-                "PDF EXTRACTED successfully using the PyPDF2 fallback",
-                context="resume_parser"
-            )
-
-        return result
+        return result   #FIX: this was only returned inside the `if used_fallback` block before,
+                         #so when pdfplumber (the primary method) succeeded, the function fell through
+                         #and returned None -> caused "object of type 'NoneType' has no len()" in routes.
 
     except Exception as e:
         log_error(e, context="extract_text_from_pdf")
@@ -144,6 +148,10 @@ def extract_text_from_pdf(file_data: bytes) -> str:
             "Please ensure it contains selectable text."
         )
 
+
+
+
+#Now we gonna abstract the docx
 def extract_text_from_docx(file_data:bytes)->str:  #This docx is for kabhi kabhi user table ki form me aapna data daal dete hai so to abstrarct that we use this 
     try:
         doc=Document(io.BytesIO(file_data))
@@ -153,7 +161,8 @@ def extract_text_from_docx(file_data:bytes)->str:  #This docx is for kabhi kabhi
             if paragraph.text.strip():
                 text_parts.append(paragraph.text)
 
-        for table in doc.table:
+
+        for table in doc.tables:#Docx file mai user kabhi kabhi table k form ma bhi data upload krte hai so make sure to abstract that also 
             for row in table.rows:
                 for cell in row.cells:
                     if cell.text.strip():
@@ -162,10 +171,8 @@ def extract_text_from_docx(file_data:bytes)->str:  #This docx is for kabhi kabhi
         text='\n'.join(text_parts)
 
         if not text.strip():
-            raise FileParsingError(
-                'No text could be abstracted from the document.',
-                'The document may be empty or curropted.'
-            )
+            raise FileParsingError('No text could be abstracted from the document.','The document may be empty or curropted.')
+
     except Exception as e:
         log_error(e, context='extract_text_from_docx')
         raise FileParsingError(
@@ -175,6 +182,10 @@ def extract_text_from_docx(file_data:bytes)->str:  #This docx is for kabhi kabhi
         ) from e
 
 
+
+
+
+#So agr doc type hai to we dont support that 
 def extract_text_from_doc(file_data: bytes) -> str:
     raise FileParsingError(
         'Legacy .doc format is not supported. '
@@ -183,6 +194,10 @@ def extract_text_from_doc(file_data: bytes) -> str:
     )
 
 
+
+
+
+#So this is the orchestrator function basically manager of owr this file ki kunsa type of PDF ya doc haiuske hisab se function call
 def extract_text(file_data:bytes,file_type:str)->str:
     if file_type=='pdf':
         return extract_text_from_pdf(file_data)
@@ -191,13 +206,15 @@ def extract_text(file_data:bytes,file_type:str)->str:
     elif file_type=='doc':
         return extract_text_from_doc(file_data)
     else:
-        raise FileParsingError(f"Invalid file type:{file_type}. kindly upload in: pdf,docx or doc")
+        raise FileParsingError(f"Invalid file type:{file_type}. kindly upload in: pdf,docx")
 
-    
 
-    
+
+
+
+#This is the main master function of this file 
 def parse_resume_file(file_data: bytes, filename:str)->Tuple[str, dict]:
-    log_info(f'parsing file :{filename}', context='parse_Resume_file')
+    log_info(f'parsing file :{filename}', context='parse_resume_file') #to check kunsi file p kaam kr rhe hai hum 
 
     #phase01:validate file
     try:
@@ -212,11 +229,11 @@ def parse_resume_file(file_data: bytes, filename:str)->Tuple[str, dict]:
     except Exception as e:
         log_error(e, context='parse_resume_file_validation')
         raise FileValidationError(
-            'Could not validate the uploaded file. Please ensure it is a valid PDF or DOCX.'
-        ) from e
+            'Could not validate the uploaded file. Please ensure it is a valid PDF or DOCX.') from e
+
+
     
     #phase02: extraction of file
-
     try:
         text = extract_text(file_data, file_type)
         log_info(f'Extracted {len(text)} chars from {filename}', context='parse_resume_file')
@@ -238,4 +255,4 @@ def parse_resume_file(file_data: bytes, filename:str)->Tuple[str, dict]:
         'text_length':     len(text),
         'success':         True,
     }
-    return text, metadata
+    return text, metadata   #Returning file data to whome so ever calls this function

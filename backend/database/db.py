@@ -1,5 +1,5 @@
 import logging
-import httpx    #httpx async support krta hai 
+import httpx    #httpx async support krta hai and its imp for a DB call and operations.
 import json
 from datetime import datetime, timezone
 from typing import List, Optional, Dict
@@ -8,14 +8,18 @@ from typing import List, Optional, Dict
 logger = logging.getLogger('ats_resume_scorer')
 
 
+
 from backend.core.config import SUPABASE_URL, SUPABASE_KEY
 
-def _get_headers():
+
+
+
+def _get_headers():      #So hr HTTP req ke sath ye headers aate hai. 
     if not SUPABASE_URL or not SUPABASE_KEY:
         return None
     return {
         "apikey": SUPABASE_KEY,
-        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Authorization": f"Bearer {SUPABASE_KEY}",   #Auth key
         "Content-Type": "application/json",   #Means return the body in json format 
         "Prefer": "return=representation"   
     }
@@ -62,6 +66,8 @@ async def save_analysis(user_id: str, filename: str, analysis_result: Dict) -> O
 
 
 
+
+
 async def get_user_history(user_id: str) -> List[Dict]:
     headers = _get_headers()
     if not headers:
@@ -100,6 +106,7 @@ async def get_user_history(user_id: str) -> List[Dict]:
     except Exception as exc:
         logger.error(f"Failed to fetch history from Supabase: {exc}")
         return []
+
 
 
 

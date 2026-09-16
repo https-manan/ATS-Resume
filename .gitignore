@@ -1,14 +1,24 @@
+
 # =========================
 # Python Virtual Environment
 # =========================
+
 Include/
 Lib/
 Scripts/
 pyvenv.cfg
+share/
+etc/
+
+# Common virtual environment names
+venv/
+.venv/
+env/
 
 # =========================
 # Environment / Secrets
 # =========================
+
 .env
 .env.*
 !.env.example
@@ -16,6 +26,7 @@ pyvenv.cfg
 # =========================
 # Python Cache
 # =========================
+
 __pycache__/
 *.py[cod]
 *$py.class
@@ -23,6 +34,7 @@ __pycache__/
 # =========================
 # Python Build / Packaging
 # =========================
+
 *.egg-info/
 dist/
 build/
@@ -31,42 +43,105 @@ build/
 # =========================
 # Jupyter
 # =========================
+
 .ipynb_checkpoints/
 
 # =========================
 # IDE / Editor
 # =========================
+
 .vscode/
 .idea/
 
 # =========================
 # OS Files
 # =========================
+
 .DS_Store
 Thumbs.db
 
 # =========================
 # Logs
 # =========================
+
 *.log
+
+# Backend logs
+backend/logs/
 
 # =========================
 # Testing / Coverage
 # =========================
+
 .pytest_cache/
 .coverage
 htmlcov/
 .coverage.*
 
 # =========================
-# Node / Frontend
+# FastAPI / Backend
 # =========================
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-pnpm-debug.log*
 
-# Frontend environment files
+# Temporary uploaded files
+uploads/
+backend/uploads/
+
+temp/
+tmp/
+
+# =========================
+# ML / Model Artifacts
+# =========================
+
+# Fine-tuned BERT model
+backend/bert_fineTuned_model/
+
+# Serialized ML artifacts
+*.pkl
+*.pickle
+*.joblib
+
+# Deep learning model files
+*.h5
+*.hdf5
+*.onnx
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.bin
+
+# =========================
+# Streamlit
+# =========================
+
+# Streamlit secrets
+.streamlit/secrets.toml
+frontend/.streamlit/secrets.toml
+
+# Streamlit cache
+.streamlit/cache/
+frontend/.streamlit/cache/
+
+# =========================
+# Frontend Environment Files
+# =========================
+
 frontend/.env
 frontend/.env.*
 !frontend/.env.example
+
+# =========================
+# Local Datasets / Generated Data
+# =========================
+
+# Uncomment these if they are generated locally
+# data/
+# datasets/
+
+# =========================
+# Local ML Metadata
+# =========================
+
+# Uncomment if metadata.json is generated locally
+# metadata.json
