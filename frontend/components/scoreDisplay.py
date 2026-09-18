@@ -17,31 +17,32 @@ COMPONENTS = [
 
 
 def display_overall_score(analysis: Dict[str, Any]) -> None:
-    """Score card with a short interpretation line."""
+    """Plain stat-row card: big number, label, short interpretation."""
     score = float(analysis.get("ATS_score", analysis.get("ats_score", 0)))
     interpretation = analysis.get("interpretation", "")
-    text_color, bg_color = get_score_color(score)
+    text_color, _ = get_score_color(score)
     label = get_score_label(score)
 
     st.markdown("## Analysis Results")
-    _, mid, _ = st.columns([1, 2, 1])
-    with mid:
-        st.markdown(
-            f"""
-            <div style="text-align:center; padding:1.75rem; background-color:{bg_color};
-                        border:1px solid {text_color}22; border-radius:8px;">
-                <h1 style="color:{text_color}; font-size:3.5rem; margin:0; font-weight:700;">
-                    {score:.0f}
-                </h1>
-                <p style="color:{text_color}; margin:0.25rem 0 0; font-weight:600;
-                          letter-spacing:0.03em; font-size:0.85rem; text-transform:uppercase;">
-                    {label} — Overall ATS Score
-                </p>
-                <p style="color:#6B7280; margin-top:0.75rem;">{interpretation}</p>
+    st.markdown(
+        f"""
+        <div style="display:flex; align-items:center; gap:1.5rem; background:#1C1F26;
+                    border:1px solid #30343C; border-left:4px solid {text_color};
+                    border-radius:8px; padding:1.25rem 1.5rem;">
+            <div style="font-size:3rem; font-weight:700; color:{text_color}; min-width:90px;">
+                {score:.0f}
             </div>
-            """,
-            unsafe_allow_html=True,
-        )
+            <div>
+                <div style="font-weight:700; color:{text_color}; text-transform:uppercase;
+                            font-size:0.8rem; letter-spacing:0.03em;">
+                    {label} — Overall ATS Score
+                </div>
+                <div style="color:#B5B9C0; margin-top:0.35rem;">{interpretation}</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def display_score_breakdown(analysis: Dict[str, Any]) -> None:
@@ -53,13 +54,13 @@ def display_score_breakdown(analysis: Dict[str, Any]) -> None:
     for i, (label, key, max_score) in enumerate(COMPONENTS):
         value = float(component_scores.get(key, 0))
         percentage = value / max_score if max_score else 0
-        bar_color = "#15803D" if percentage >= 0.8 else "#B45309" if percentage >= 0.6 else "#B91C1C"
+        bar_color = "#4ADE80" if percentage >= 0.8 else "#FBBF24" if percentage >= 0.6 else "#F87171"
 
         with left if i % 2 == 0 else right:
             st.markdown(f"**{label}**")
             st.markdown(
                 f"""
-                <div style="background-color:#E5E7EB; border-radius:4px; height:10px; margin-bottom:5px;">
+                <div style="background-color:#30343C; border-radius:4px; height:10px; margin-bottom:5px;">
                     <div style="background-color:{bar_color}; width:{percentage * 100}%;
                                 height:100%; border-radius:4px;"></div>
                 </div>

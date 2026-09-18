@@ -7,10 +7,7 @@ from groq import Groq
 
 logger=logging.getLogger('ats_resume_scorer') #Hum yha print sattement use nahi kr rhe coz logger gives more advantage like we can classify using logger ki error hai ya warning ha ya so on 
 
-#NOTE: llama-3.3-70b-versatile (and llama-3.1-8b-instant) have moved to Groq's Enterprise-only
-#tier and return a 404 model_not_found for regular API keys. openai/gpt-oss-120b is the current
-#publicly-available production model with standard per-token pricing. Swap this if Groq changes
-#their lineup again — check https://console.groq.com/docs/models for what's currently public.
+
 GROQ_MODEL='openai/gpt-oss-120b'
 
 

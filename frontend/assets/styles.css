@@ -1,28 +1,25 @@
 :root {
     /* Primary */
-    --primary-color: #2563EB;
-    --primary-hover: #1D4ED8;
+    --primary-color: #3B82F6;
+    --primary-hover: #60A5FA;
 
-    /* Status */
-    --success-color: #15803D;
-    --success-bg: #F0FDF4;
-    --warning-color: #B45309;
-    --warning-bg: #FFFBEB;
-    --danger-color: #B91C1C;
-    --danger-bg: #FEF2F2;
-    --info-color: #1D4ED8;
-    --info-bg: #EFF6FF;
+    /* Status — brightened text + dark tinted backgrounds so labels still pop on a dark page */
+    --success-color: #4ADE80;
+    --success-bg: #132A1D;
+    --warning-color: #FBBF24;
+    --warning-bg: #2A2113;
+    --danger-color: #F87171;
+    --danger-bg: #2A1616;
+    --info-color: #60A5FA;
+    --info-bg: #16202E;
 
     /* Neutral */
-    --text-primary: #1F2937;
-    --text-secondary: #6B7280;
-    --text-muted: #9CA3AF;
-    --background-light: #F9FAFB;
-    --background-white: #FFFFFF;
-    --border-color: #E5E7EB;
-
-    /* Shadow (subtle, used sparingly) */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+    --text-primary: #FAFAFA;
+    --text-secondary: #B5B9C0;
+    --text-muted: #8B90A0;
+    --background-page: #0E1117;
+    --background-card: #1C1F26;
+    --border-color: #30343C;
 
     /* Spacing */
     --spacing-xs: 0.25rem;
@@ -47,10 +44,17 @@
 
 /* ============================================
    BASE
+   Background and text are pinned explicitly here
+   as a safety net (in case config.toml isn't picked
+   up by the host), matching the dark theme values
+   above. We don't force color on every element —
+   Streamlit's own theme handles default text color;
+   this just guarantees the page shell itself is dark.
    ============================================ */
 .stApp {
-    font-family: var(--font-family-base);
+    background-color: var(--background-page);
     color: var(--text-primary);
+    font-family: var(--font-family-base);
     line-height: 1.55;
 }
 
@@ -61,16 +65,29 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-primary);
 }
 
+p, span, div, li {
+    color: var(--text-primary);
+}
+
+/* ============================================
+   SIDEBAR
+   ============================================ */
+section[data-testid="stSidebar"] {
+    background-color: var(--background-card);
+    border-right: 1px solid var(--border-color);
+}
+
 /* ============================================
    CARDS
    ============================================ */
 .metric-card,
 .card-elevated,
 .feature-card {
-    background: var(--background-white);
+    background: var(--background-card);
     border-radius: var(--radius-lg);
     padding: var(--spacing-lg);
     border: 1px solid var(--border-color);
+    color: var(--text-primary);
 }
 
 /* ============================================
@@ -84,7 +101,7 @@ h1, h2, h3, h4, h5, h6 {
    PROGRESS BAR
    ============================================ */
 .progress-container {
-    background: var(--background-light);
+    background: var(--background-card);
     border-radius: var(--radius-sm);
     height: 10px;
     overflow: hidden;
@@ -130,8 +147,9 @@ h1, h2, h3, h4, h5, h6 {
     margin: var(--spacing-xs) var(--spacing-xs) 0 0;
     border-radius: var(--radius-sm);
     font-size: var(--font-size-sm);
-    background: var(--background-light);
+    background: var(--background-card);
     border: 1px solid var(--border-color);
+    color: var(--text-primary);
 }
 
 .skill-tag-validated { background: var(--success-bg); border-color: var(--success-color); color: var(--success-color); }
@@ -160,13 +178,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ============================================
-   STAT / STEP (flat, no gradients)
+   STAT / STEP
    ============================================ */
 .stat-card {
     text-align: center;
     padding: var(--spacing-lg);
     border-radius: var(--radius-lg);
-    background: var(--background-white);
+    background: var(--background-card);
     border: 1px solid var(--border-color);
 }
 
@@ -200,13 +218,14 @@ h1, h2, h3, h4, h5, h6 {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: var(--background-light);
+    background: var(--background-card);
     border: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
     margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
 }
 
 .step-item.active .step-number {
@@ -218,7 +237,7 @@ h1, h2, h3, h4, h5, h6 {
 .step-item.completed .step-number {
     background: var(--success-color);
     border-color: var(--success-color);
-    color: white;
+    color: #0E1117;
 }
 
 .step-connector {

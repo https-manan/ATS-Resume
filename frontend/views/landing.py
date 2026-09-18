@@ -9,8 +9,8 @@ def render():
         .main-header {
             text-align: center;
             padding: 2.5rem 2rem;
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
+            background: #1C1F26;
+            border: 1px solid #30343C;
             border-radius: 8px;
             margin-bottom: 2rem;
         }
@@ -18,14 +18,14 @@ def render():
             font-size: 2.2rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
-            color: #1F2937;
+            color: #FAFAFA;
         }
         .main-header h3 {
             font-weight: 500;
-            color: #374151;
+            color: #D1D5DB;
         }
         .main-header p {
-            color: #6B7280;
+            color: #B5B9C0;
         }
     </style>
     """, unsafe_allow_html=True)

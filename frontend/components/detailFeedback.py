@@ -32,8 +32,8 @@ def _render_issue(issue: Dict[str, Any]) -> None:
                     padding:0.65rem 1rem; border-radius:4px; margin-bottom:0.5rem;">
             <span style="color:{text_color}; font-weight:700; font-size:0.75rem;
                         letter-spacing:0.03em;">{label}</span>
-            <strong style="margin-left:0.5rem;">{title}</strong>
-            <div style="color:#6B7280; margin-top:0.15rem; font-size:0.85rem;">{impact}</div>
+            <strong style="margin-left:0.5rem; color:#FAFAFA;">{title}</strong>
+            <div style="color:#B5B9C0; margin-top:0.15rem; font-size:0.85rem;">{impact}</div>
         </div>
         """,
         unsafe_allow_html=True,

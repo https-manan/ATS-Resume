@@ -77,9 +77,6 @@ with st.sidebar:
         st.session_state.current_view = 'history'
         st.rerun()
 
-    if st.button("Resources", use_container_width=True):
-        st.session_state.current_view = 'resources'
-        st.rerun()
 
     st.markdown("---")
     st.markdown("### Account")
@@ -169,8 +166,3 @@ elif st.session_state.current_view == 'history':
     # Import and render history page
     from frontend.views import history
     history.render()
-
-elif st.session_state.current_view == 'resources':
-    # Import and render resources page
-    from frontend.views import resources
-    resources.render()

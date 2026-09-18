@@ -13,14 +13,15 @@ from backend.core.config import SUPABASE_URL, SUPABASE_KEY
 
 
 
-
+#Headers contain the authentication and instructions needed for our backend to communicate with Supabase.
+#This get_headers is main this is for checking if supabase ke saare credentiaals hai to sahi hai varna return None and agr hai to good store data in headers which we gonna use in later requests
 def _get_headers():      #So hr HTTP req ke sath ye headers aate hai. 
     if not SUPABASE_URL or not SUPABASE_KEY:
         return None
     return {
         "apikey": SUPABASE_KEY,
         "Authorization": f"Bearer {SUPABASE_KEY}",   #Auth key
-        "Content-Type": "application/json",   #Means return the body in json format 
+        "Content-Type": "application/json",   #means it gonna store a body in DB which is in json format 
         "Prefer": "return=representation"   
     }
 
@@ -28,15 +29,17 @@ def _get_headers():      #So hr HTTP req ke sath ye headers aate hai.
 
 
 async def save_analysis(user_id: str, filename: str, analysis_result: Dict) -> Optional[str]:
-    headers = _get_headers()
+    headers = _get_headers()  #so headers is basically to store DB connection hai and user ne upload kra hai and all
     if not headers:
         return None
 
-    def _json_default(o):
+    def _json_default(o):   #"If my analysis contains some special Python/Pydantic object that JSON doesn't understand, convert it into something JSON can understand. and we convert it into json using this .json_dump "
         if hasattr(o, 'model_dump'):
             return o.model_dump()
         return str(o)
-    serializable_result = json.loads(json.dumps(analysis_result, default=_json_default))
+    
+    serializable_result = json.loads(json.dumps(analysis_result, default=_json_default)) #Final result jo analysis_result se aaya hai we are converting it in JSON
+
 
     doc = {
         "user_id": user_id,  #Kis user ka hai 
@@ -51,7 +54,7 @@ async def save_analysis(user_id: str, filename: str, analysis_result: Dict) -> O
     url = f"{SUPABASE_URL.rstrip('/')}/rest/v1/analyses"
     
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient() as client:  #Basically creating a client to talk to supabase
             response = await client.post(url, headers=headers, json=doc)
             response.raise_for_status()
             data = response.json()

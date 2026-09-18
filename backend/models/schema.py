@@ -50,7 +50,6 @@ class AnalysisResponse(BaseModel):
     detailed_feedback: List[IssueDetail]
     jd_match_analysis: Optional[JDComparison] = None    #Job description optional hai user daal bhi skta hai and nahi bhi 
     skill_validation_details: Optional[SkillValidationDetails] = None
-
     ats_score: float
     keyword_match: float = 0.0
     missing_keywords: List[str] = []
