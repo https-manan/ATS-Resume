@@ -23,9 +23,7 @@ APP_DESCRIPTION='Analyse resume against job description using NLP + ML'
 
 #CORS
 ALLOWED_ORIGINS=[
-    'http://localhost:5173',    #Vite dev server(React)
-    'http://localhost:3000',    #Fallback for react
-    'http://127.0.0.1:5173'
+    "https://resumeiq-1.streamlit.app"
 ]
 
 
