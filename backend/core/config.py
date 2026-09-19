@@ -22,9 +22,9 @@ APP_DESCRIPTION='Analyse resume against job description using NLP + ML'
 
 
 #CORS
-ALLOWED_ORIGINS=[
+ALLOWED_ORIGINS = [
     "https://resumeiq-1.streamlit.app"
-]
+    ]
 
 
 #FILE size setting 
@@ -60,6 +60,10 @@ SENTENCE_TRANSFORMER_MODEL = str(
 
 
 
+HF_MODEL_ID = "https-manan/resumeIQ-BERT"
+HF_TOKEN = os.getenv('HF_TOKEN', '')
+
+
 #Basically jo weightage hogi for total 100 score of the resume
 #And yha isi liya hai(not in a function in a file) coz hum aapne hiab se baad me he change kr ske
 SCORE_WEIGHTS = {
@@ -78,4 +82,4 @@ JD_SEMANTIC_WEIGHT = 0.4
 GROQ_API_KEY=os.getenv('GROQ_API_KEY','')
 SUPABASE_URL=os.getenv('SUPABASE_URL')
 SUPABASE_KEY=os.getenv('SUPABASE_KEY')
-SUPABASE_JWT_SECRET="basdjahvbuhbjhnkjb"
+SUPABASE_JWT_SECRET = os.getenv('SUPABASE_JWT_SECRET', '')

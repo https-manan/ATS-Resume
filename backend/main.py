@@ -2,9 +2,10 @@ import logging
 from contextlib import asynccontextmanager  #Imp decorator hai this is to making the function async
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.core.config import(ALLOWED_ORIGINS,APP_DESCRIPTION,APP_TITLE,APP_VERSION,SPACY_MODEL_PRIMARY,SPACY_MODEL_SECONDRY,SENTENCE_TRANSFORMER_MODEL)
+from backend.core.config import(ALLOWED_ORIGINS,APP_DESCRIPTION,APP_TITLE,APP_VERSION,SPACY_MODEL_PRIMARY,SPACY_MODEL_SECONDRY)
 from backend.api.routes import router
-
+from backend.core.remote_embedder import RemoteEmbedder
+from backend.core.config import HF_MODEL_ID, HF_TOKEN
 
 logger=logging.getLogger('ats_resume_scorer')#Basically it means that jo logs aab se aana start honge vo iss application ke honge its like logs of this app from now on and its like a mark
 
@@ -24,11 +25,10 @@ async def lifespan(app:FastAPI):
         app.state.nlp=spacy.load(SPACY_MODEL_SECONDRY)
         logger.info(f'Loading:- {SPACY_MODEL_SECONDRY} (fallback)')
         
-    logger.info(f'Loading Sentance transformer:- {SENTENCE_TRANSFORMER_MODEL}')
-    from sentence_transformers import SentenceTransformer  
+    logger.info(f'Loading remote sentence transformer via HF Inference API: {HF_MODEL_ID}')
 
-    app.state.embedder=SentenceTransformer(SENTENCE_TRANSFORMER_MODEL)
-    logger.info(f'Loaded {SENTENCE_TRANSFORMER_MODEL}')
+    app.state.embedder = RemoteEmbedder(HF_MODEL_ID, HF_TOKEN)
+    logger.info(f'Loaded remote embedder: {HF_MODEL_ID}')
 
     logger.info("All models loaded. API is ready to serve requests")
 
@@ -51,7 +51,7 @@ app=FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[ALLOWED_ORIGINS],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods = ['*'],
     allow_headers = ['*'],

@@ -1,11 +1,11 @@
 import re
 import spacy
 import numpy as np 
-from sentence_transformers import SentenceTransformer
+from backend.core.remote_embedder import RemoteEmbedder
+from backend.core.config import HF_MODEL_ID, HF_TOKEN
 from typing import Dict,List,Optional,Tuple
 
 from backend.utils.file_utils import log_warning
-from backend.core.config import SENTENCE_TRANSFORMER_MODEL
 from backend.utils.matching import fuzzy_match_keywords
 
 
@@ -20,14 +20,13 @@ STREET_ADDRESS_PATTERN = (
 
 
 #lazy loaded singleton so hum apna finetuned model ek hi baar load kre baar baar nai, sb functions isko use krenge jab tk khud ka embedder na diya ho
-_default_embedder: Optional[SentenceTransformer] = None
+_default_embedder: Optional[RemoteEmbedder] = None
 
-def _get_default_embedder() -> SentenceTransformer:
+def _get_default_embedder() -> RemoteEmbedder:
     global _default_embedder
     if _default_embedder is None:
-        _default_embedder = SentenceTransformer(SENTENCE_TRANSFORMER_MODEL)
+        _default_embedder = RemoteEmbedder(HF_MODEL_ID, HF_TOKEN)
     return _default_embedder
-
 
 
 #ye tier score is we gonna use this helper function later in diff things like for score compairision
@@ -103,7 +102,7 @@ def detect_location_info(text:str,nlp:spacy.language)->Dict:
 
 
 
-def _calculate_semantic_similarity(skill:str,text:str,embedder:SentenceTransformer)->float:
+def _calculate_semantic_similarity(skill:str,text:str,embedder:RemoteEmbedder)->float:
     #Similarity calculate by isng cosin similarity:- (A.B)/(|A|x|B|)
     if not skill or not text:
         return 0.0
@@ -121,7 +120,7 @@ def _calculate_semantic_similarity(skill:str,text:str,embedder:SentenceTransform
 
 
 #Yhe hum skils ka exect match krenge from the user's project or exp
-def _skill_matches(skill:str,text:str,embedder:SentenceTransformer,threshold:float)->Tuple[bool,float]:
+def _skill_matches(skill:str,text:str,embedder:RemoteEmbedder,threshold:float)->Tuple[bool,float]:
     if skill.lower() in text.lower():
         return True,1.0
     #To scores ke lia we gonna call _calculate_semantic_similarity helper func which gonna use cosin to find similarity
@@ -133,7 +132,7 @@ def _skill_matches(skill:str,text:str,embedder:SentenceTransformer,threshold:flo
 
 
 #Yha hum particularly user ke projects se dhund rhe hai ki jo skills project mai use kri h vo de
-def validate_skills_with_projects(skills: List[str],projects: List[Dict],experience_entries: List[Dict], embedder: Optional[SentenceTransformer] = None,threshold: float = 0.6,) -> Dict:
+def validate_skills_with_projects(skills: List[str],projects: List[Dict],experience_entries: List[Dict], embedder: Optional[RemoteEmbedder] = None,threshold: float = 0.6,) -> Dict:
     #agr koi embedder pass nai kia to apna finetuned wala use kr lenge (SENTENCE_TRANSFORMER_MODEL wala)
     embedder = embedder or _get_default_embedder()
 

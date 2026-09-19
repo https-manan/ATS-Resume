@@ -1,6 +1,5 @@
 import spacy
-from sentence_transformers import SentenceTransformer
-from backend.core.config import SENTENCE_TRANSFORMER_MODEL
+from backend.core.remote_embedder import RemoteEmbedder
 from typing import Dict, List, Optional
 from backend.models.schema import IssueDetail
 from backend.services.groqParser import parse_resume, parse_job_description
@@ -9,7 +8,7 @@ from backend.services.feedback import analyze_issues, generate_issues_summary
 from backend.services.atsScorer import calculate_overall_score, validate_skills_with_projects
 
 
-def analyze_full_resume(resume_text: str,nlp: spacy.Language, embedder: Optional[SentenceTransformer],job_description: Optional[str] = None,) -> Dict:
+def analyze_full_resume(resume_text: str, nlp: spacy.Language, embedder: Optional[RemoteEmbedder], job_description: Optional[str] = None,) -> Dict:
     import logging
     logger = logging.getLogger('ats_resume_scorer')
     #FIX: previously this did `embedder = SENTENCE_TRANSFORMER_MODEL`, which overwrote the real

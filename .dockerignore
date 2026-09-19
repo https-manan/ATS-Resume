@@ -9,3 +9,4 @@ venv/
 frontend/
 logs/
 *.log
+backend/bert_fineTuned_model/

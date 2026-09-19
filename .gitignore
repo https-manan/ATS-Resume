@@ -96,6 +96,7 @@ tmp/
 # Fine-tuned BERT model
 backend/bert_fineTuned_model/
 
+
 # Serialized ML artifacts
 *.pkl
 *.pickle
